@@ -22,12 +22,16 @@ const addExpense = async (req, res) =>{
 
 const loginUser = async (req, res) => {
   try {
-    const { name, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await Expense.findOne({ where: { name, password } });
+    const emailId = await Expense.findOne({ where: { email } });
+    const passwordId = await Expense.findOne({ where: { password } });
 
-    if (!user) {
-      return res.status(401).send("Invalid name or password");
+    if (!emailId) {
+      return res.status(401).send("Email Id does not exist, please go to the sign up page");
+    }
+    if(!passwordId){
+        return res.status(401).send("Incorrect password!");
     }
 
     res.status(200).send("Login successful!");

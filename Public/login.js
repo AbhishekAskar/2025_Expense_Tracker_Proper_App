@@ -2,7 +2,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   e.preventDefault();
 
   const formData = {
-    name: e.target.name.value,
+    email: e.target.email.value,
     password: e.target.password.value,
   };
 
