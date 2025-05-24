@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", expenseRoutes);
 
-db.sync().then(() => {
+db.sync({force: false}).then(() => {
   app.listen(port, () => {
     console.log("✅ Server is listening on Port: " + port);
   });
