@@ -20,6 +20,24 @@ const addExpense = async (req, res) =>{
     }
 }
 
+const loginUser = async (req, res) => {
+  try {
+    const { name, password } = req.body;
+
+    const user = await Expense.findOne({ where: { name, password } });
+
+    if (!user) {
+      return res.status(401).send("Invalid name or password");
+    }
+
+    res.status(200).send("Login successful!");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Login failed");
+  }
+};
+
 module.exports = {
-    addExpense
+    addExpense,
+    loginUser
 }

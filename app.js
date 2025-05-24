@@ -8,13 +8,16 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
+
 app.use("/api", expenseRoutes);
 
-
-db.sync({force: false}).then(()=>{
-    app.listen(port, (req, res) => {
-        console.log("The is listening on Port: " + port);
-    })
-}).catch((error)=>{
-    console.log(error);
-})
+db.sync().then(() => {
+  app.listen(port, () => {
+    console.log("✅ Server is listening on Port: " + port);
+  });
+}).catch((error) => {
+  console.log(error);
+});
