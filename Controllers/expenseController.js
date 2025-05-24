@@ -1,10 +1,25 @@
-exports.submitExpense = (req, res) => {
-  console.log("🔥 Headers:", req.headers);
-  console.log("📦 Payload:", req.body);
+const db = require('../Utils/db-connection');
+const Expense = require('../Models/expenseModel');
 
-  res.status(200).json({
-    message: "Expense received!",
-    receivedData: req.body,
-    customHeader: req.headers["x-custom-header"] || "No custom header found"
-  });
-};
+const addExpense = async (req, res) =>{
+    try {
+        const { name, email, password } = req.body;
+        const existingUser = await Expense.findOne({ where: {email} });
+        if(existingUser){
+            return res.status(400).send("User with the same Email Id already exists");
+        }
+        await Expense.create({
+            name,
+            email,
+            password
+        });
+        res.status(201).send("Expense Created Successfully!");
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Cannot create an expense");
+    }
+}
+
+module.exports = {
+    addExpense
+}
