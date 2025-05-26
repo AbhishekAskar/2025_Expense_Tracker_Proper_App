@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+</head>
+
+<body>
+    <h2>Daily Expenses</h2>
+    <form id="expenseForm">
+        <label>Money Spent:
+            <input type="number" step="0.01" min="0" name="money" required />
+        </label><br />
+
+        <label>Description:
+            <input type="text" name="description" required />
+        </label><br />
+
+        <label>Category:
+            <select name="category" required>
+                <option value="">--Select Category--</option>
+                <option value="food">Food</option>
+                <option value="travel">Travel</option>
+                <option value="shopping">Shopping</option>
+                <option value="rent">Rent</option>
+                <option value="entertainment">Entertainment</option>
+            </select>
+        </label><br />
+
+        <button type="submit">Add Expense</button>
+    </form>
+
+    <div id="expenseList">
+        <h3>Your Expenses:</h3>
+        <ul id="expenseItems"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="expense.js"></script>
+</body>
+
+</html>

@@ -8,7 +8,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
   };
 
   try {
-    const response = await axios.post("/api/expenses", formData);
+    const response = await axios.post("/user/signup", formData);
     alert(response.data);
     window.location.href = "/login.html"; // redirect to login on success
   } catch (error) {

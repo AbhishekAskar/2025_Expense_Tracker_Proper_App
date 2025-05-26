@@ -7,9 +7,9 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   };
 
   try {
-    const response = await axios.post("/api/login", formData);
-    alert(response.data);
-    // TODO: redirect to dashboard/home page
+    const response = await axios.post("/user/login", formData);
+    alert(response.data || "Login successful!");
+    window.location.href = "/expense.html";
   } catch (error) {
     alert(error.response?.data || "Login failed");
   }
