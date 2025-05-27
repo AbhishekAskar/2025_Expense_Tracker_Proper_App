@@ -1,6 +1,14 @@
+require('dotenv').config();
 const db = require('../Utils/db-connection');
 const User = require('../Models/userModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt'); //This is one way hashing, it can't be decrypted back
+const jwt = require('jsonwebtoken')
+const SECRET_KEY = process.env.SECRET_KEY; //We are taking it from the .env file
+
+//userId + Secret Key + encryption algo => token
+//Secret Key => used to encrypt and decrypt the data
+
+
 
 console.log("hello")
 
@@ -44,7 +52,8 @@ const loginUser = async (req, res) => {
             return res.status(401).send("Incorrect password!");
         }
 
-        res.status(200).send("Login successful!");
+        const token = jwt.sign({userId: user.id}, SECRET_KEY);
+        res.status(200).send({token});
     } catch (error) {
         console.log(error);
         res.status(500).send("Login failed");

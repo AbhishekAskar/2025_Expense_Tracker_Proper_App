@@ -8,6 +8,10 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
   try {
     const response = await axios.post("/user/login", formData);
+
+    const token = response.data.token;
+    localStorage.setItem("token", token);
+
     alert(response.data || "Login successful!");
     window.location.href = "/expense.html";
   } catch (error) {

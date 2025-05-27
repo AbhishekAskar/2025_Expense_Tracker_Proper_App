@@ -1,3 +1,4 @@
+const token = localStorage.getItem("token");
 document.addEventListener("DOMContentLoaded", () => {
   fetchExpenses();
 
@@ -11,7 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      await axios.post("/expense", formData);
+      await axios.post("/expense", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       e.target.reset();
       fetchExpenses(); // Refresh list after submission
     } catch (error) {
@@ -22,16 +27,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchExpenses() {
   try {
-    const response = await axios.get("/expense");
+    const response = await axios.get("/expense", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     const expenseList = document.getElementById("expenseItems");
-    expenseList.innerHTML = ""; // Clear list
+    expenseList.innerHTML = "";
 
     response.data.forEach(exp => {
       const li = document.createElement("li");
       li.textContent = `${exp.money} - ${exp.description} (${exp.category}) `;
 
       const delBtn = document.createElement("button");
-      delBtn.textContent = "❌ Delete";
+      delBtn.textContent = "Delete";
       delBtn.style.marginLeft = "10px";
       delBtn.onclick = () => deleteExpense(exp.id);
 
@@ -45,7 +54,11 @@ async function fetchExpenses() {
 
 async function deleteExpense(id) {
   try {
-    await axios.delete(`/expense/delete/${id}`);
+    await axios.delete(`/expense/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     fetchExpenses(); // Refresh list
   } catch (error) {
     alert("Failed to delete expense");

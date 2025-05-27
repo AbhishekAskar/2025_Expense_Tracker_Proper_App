@@ -3,6 +3,8 @@ const path = require("path");
 const db = require('./Utils/db-connection');
 const userRoutes = require("./Routes/userRoute");
 const expenseRoutes = require("./Routes/expenseRoute");
+require('./Models') //This needs to be done because using this only the index.js works otherwise it won't
+
 const port = 3000;
 const app = express();
 
@@ -21,7 +23,7 @@ app.get("/user/signup", (req, res) => {
 app.use("/user", userRoutes);
 app.use("/expense", expenseRoutes);
 
-db.sync({force: false}).then(() => {
+db.sync({force: true}).then(() => {
   app.listen(port, () => {
     console.log("✅ Server is listening on Port: " + port);
   });

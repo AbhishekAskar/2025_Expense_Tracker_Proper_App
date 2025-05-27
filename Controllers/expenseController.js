@@ -4,7 +4,8 @@ const Expense = require('../Models/expenseModel');
 const addExpense = async (req, res) => {
     try {
         const { money, description, category } = req.body;
-        const expense = Expense.create({money, description, category});
+        const userId = req.user.userId;
+        const expense = Expense.create({money, description, category, userId});
         res.status(200).send("Expense has been added successfully!");
     } catch (error) {
         console.log(error);
@@ -14,7 +15,8 @@ const addExpense = async (req, res) => {
 
 const getExpense = async (req, res) => {
     try {
-        const expense = await Expense.findAll();
+        const userId = req.user.userId
+        const expense = await Expense.findAll({where : {userId}});
         res.status(200).json(expense);
     } catch (error) {
         console.log(error);
