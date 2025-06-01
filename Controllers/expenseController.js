@@ -5,8 +5,8 @@ const addExpense = async (req, res) => {
     try {
         const { money, description, category } = req.body;
         const userId = req.user.userId;
-        const expense = Expense.create({money, description, category, userId});
-        res.status(200).send("Expense has been added successfully!");
+        const expense = await Expense.create({money, description, category, userId});
+        res.status(201).json(expense);
     } catch (error) {
         console.log(error);
         res.status(500).send("Cannot create an expense");

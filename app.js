@@ -23,7 +23,7 @@ app.get("/user/signup", (req, res) => {
 app.use("/user", userRoutes);
 app.use("/expense", expenseRoutes);
 
-db.sync({force: true}).then(() => {
+db.sync({force: false}).then(() => {
   app.listen(port, () => {
     console.log("✅ Server is listening on Port: " + port);
   });

@@ -12,7 +12,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const token = response.data.token;
     localStorage.setItem("token", token);
 
-    alert(response.data || "Login successful!");
+    alert("Login successful!");
     window.location.href = "/expense.html";
   } catch (error) {
     alert(error.response?.data || "Login failed");

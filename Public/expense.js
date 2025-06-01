@@ -1,4 +1,5 @@
 const token = localStorage.getItem("token");
+
 document.addEventListener("DOMContentLoaded", () => {
   fetchExpenses();
 
@@ -12,18 +13,39 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try {
-      await axios.post("/expense", formData, {
+      const response = await axios.post("/expense", formData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
+
       e.target.reset();
-      fetchExpenses(); // Refresh list after submission
+
+      // Instead of refetching everything, just add the new item directly
+      addExpenseToList(response.data);
     } catch (error) {
       alert("Error adding expense: " + (error.response?.data || error.message));
     }
   });
 });
+
+function addExpenseToList(exp) {
+  const expenseList = document.getElementById("expenseItems");
+
+  const li = document.createElement("li");
+  li.textContent = `${exp.money} - ${exp.description} (${exp.category}) `;
+
+  const delBtn = document.createElement("button");
+  delBtn.textContent = "Delete";
+  delBtn.style.marginLeft = "10px";
+  delBtn.onclick = () => {
+    deleteExpense(exp.id);
+    li.remove(); // Remove from UI immediately on delete
+  };
+
+  li.appendChild(delBtn);
+  expenseList.appendChild(li);
+}
 
 async function fetchExpenses() {
   try {
@@ -32,21 +54,11 @@ async function fetchExpenses() {
         Authorization: `Bearer ${token}`
       }
     });
+
     const expenseList = document.getElementById("expenseItems");
     expenseList.innerHTML = "";
 
-    response.data.forEach(exp => {
-      const li = document.createElement("li");
-      li.textContent = `${exp.money} - ${exp.description} (${exp.category}) `;
-
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "Delete";
-      delBtn.style.marginLeft = "10px";
-      delBtn.onclick = () => deleteExpense(exp.id);
-
-      li.appendChild(delBtn);
-      expenseList.appendChild(li);
-    });
+    response.data.forEach(addExpenseToList);
   } catch (error) {
     console.error("Error fetching expenses", error);
   }
@@ -59,7 +71,7 @@ async function deleteExpense(id) {
         Authorization: `Bearer ${token}`
       }
     });
-    fetchExpenses(); // Refresh list
+    // No need to call fetchExpenses, since we already removed the item from UI in delBtn.onclick
   } catch (error) {
     alert("Failed to delete expense");
   }
