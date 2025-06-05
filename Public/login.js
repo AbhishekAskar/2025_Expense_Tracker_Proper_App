@@ -12,8 +12,10 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const token = response.data.token;
     localStorage.setItem("token", token);
 
-    alert("Login successful!");
-    window.location.href = "/expense.html";
+    alert(response.data.message);
+    if(response.data.success){
+      window.location.href = "/expense.html";
+    }
   } catch (error) {
     alert(error.response?.data || "Login failed");
   }

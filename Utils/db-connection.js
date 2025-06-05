@@ -1,22 +1,26 @@
-const {Sequelize} = require('sequelize');
+const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize('newexpensetracker', 'root', 'Root@123', {
     host: "localhost",
-    dialect: "mysql"
+    dialect: "mysql",
+    logging: (msg) => {
+        if (!msg.includes("SELECT")) console.log(msg);
+    }
 });
 
 //.authenticate returns promise that's why we use AWAIT here
 
-(async() =>{
-    try{
- 
-    await sequelize.authenticate();
-    console.log("Connection to the database has been created");
+(async () => {
+    try {
 
-} catch (error){
+        await sequelize.authenticate();
+        console.log("Connection to the database has been created");
 
-    console.log(error);
+    } catch (error) {
 
-}})();
+        console.log(error);
+
+    }
+})();
 
 module.exports = sequelize;

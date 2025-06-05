@@ -27,7 +27,7 @@ const addUser = async (req, res) => {
                 email,
                 password: hash
             });
-            res.status(201).send("User Created Successfully!");
+            res.status(201).json({ message: "User Created Successfully!", success: true });
 
         })
     } catch (error) {
@@ -53,7 +53,7 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign({userId: user.id}, SECRET_KEY);
-        res.status(200).send({token});
+        res.status(200).send({ token, message: "Login successful!", success: true });
     } catch (error) {
         console.log(error);
         res.status(500).send("Login failed");
