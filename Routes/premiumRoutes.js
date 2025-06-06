@@ -33,7 +33,7 @@ router.post('/pay', authenticate, async (req, res) => {
 
         console.log("✅ Got paymentSessionId:", paymentSessionId);
 
-        res.status(200).json({ paymentSessionId });
+        res.status(200).json({ paymentSessionId, orderId });
     } catch (err) {
         console.error("❌ Pay Route Error:", err);
         res.status(500).json({ error: err.message });

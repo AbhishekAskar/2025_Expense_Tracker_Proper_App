@@ -1,9 +1,29 @@
 const token = localStorage.getItem("token");
 const cashfree = Cashfree({ mode: "sandbox" });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   checkPremiumStatus();
   fetchExpenses();
+
+  // 🔁 Fallback: Try verifying pending order after redirect
+  const pendingOrderId = localStorage.getItem("pendingOrderId");
+  if (pendingOrderId) {
+    try {
+      const verifyRes = await axios.post("/purchase/update-status", {
+        orderId: pendingOrderId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (verifyRes.data.message === "User upgraded to premium") {
+        alert("🎉 Premium activated after redirect!");
+        localStorage.removeItem("pendingOrderId");
+        location.reload();
+      }
+    } catch (error) {
+      console.error("🧨 Fallback verification failed:", error);
+    }
+  }
 
   document.getElementById("expenseForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -34,25 +54,29 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      const paymentSessionId = response.data.paymentSessionId;
+      const { paymentSessionId, orderId } = response.data;
+
+      // 💾 Save orderId in case redirect happens before callback fires
+      localStorage.setItem("pendingOrderId", orderId);
+
       let checkoutOptions = {
-        paymentSessionId: paymentSessionId,
+        paymentSessionId,
         redirectTarget: "_self", // reloads same page after payment
         onSuccess: async () => {
           console.log("💳 Payment success callback triggered!");
           try {
             const verifyRes = await axios.post("/purchase/update-status", {
-              orderId: response.data.order_id  // make sure this value is correctly passed
+              orderId
             }, {
               headers: {
-                Authorization: token  // or however you're passing the JWT
+                Authorization: `Bearer ${token}`
               }
             });
 
-
-            if (verifyRes.data.success) {
+            if (verifyRes.data.message === "User upgraded to premium") {
               alert("🎉 Payment successful! You're now a Premium User.");
-              location.reload(); // reload page to update UI
+              localStorage.removeItem("pendingOrderId");
+              location.reload();
             } else {
               alert("⚠️ Payment done but verification failed!");
             }
@@ -73,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await cashfree.checkout(checkoutOptions);
     } catch (error) {
       console.log("Error in payment:", error);
+      alert("Payment error: " + error.message);
     }
   });
 });
@@ -126,11 +151,18 @@ async function checkPremiumStatus() {
     });
 
     const isPremium = response.data.isPremium;
+    const premiumDiv = document.getElementById('premium-status');
+    const upgradeBtn = document.getElementById('renderBtn');
+
     if (isPremium) {
-      document.getElementById('premium-status').textContent = "🌟 You are a Premium User!";
-      document.getElementById('renderBtn').style.display = 'none';
+      premiumDiv.classList.remove('d-none');
+      upgradeBtn.classList.add('d-none');
+    } else {
+      premiumDiv.classList.add('d-none');
+      upgradeBtn.classList.remove('d-none');
     }
   } catch (error) {
     console.error("Failed to fetch user details:", error);
   }
 }
+
