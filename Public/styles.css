@@ -1,0 +1,264 @@
+/* style.css - Common stylesheet for Login, Signup, Expense pages */
+
+/* Google Font: Poppins - modern, clean, youthful */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+:root {
+  --primary-gradient: linear-gradient(135deg, #ff6ec4, #7873f5);
+  --secondary-gradient: linear-gradient(135deg, #42e695, #3bb2b8);
+  --background-color: #fef9ff;
+  --card-bg: #ffffff;
+  --text-color: #222;
+  --accent-color: #ff6ec4;
+  --btn-bg: #7873f5;
+  --btn-hover-bg: #5c49b1;
+  --shadow-color: rgba(134, 91, 247, 0.4);
+  --input-bg: #f4f5fa;
+  --input-border: #ddd;
+  --input-focus: #7873f5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 20px var(--shadow-color);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 30px var(--shadow-color);
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  background: var(--primary-gradient);
+  background-clip: text; 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  user-select: text;
+  letter-spacing: 0.05em;
+}
+
+h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--btn-bg);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Form styles */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+label.form-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #555;
+  user-select: text;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select.form-select {
+  padding: 0.7rem 1rem;
+  border: 2px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--input-bg);
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  outline-offset: 2px;
+  font-weight: 500;
+  color: #333;
+  user-select: text;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+select.form-select:focus {
+  border-color: var(--input-focus);
+  background: #fff;
+  box-shadow: 0 0 8px var(--btn-bg);
+}
+
+/* Buttons */
+.btn, .btn-custom, button {
+  background: var(--btn-bg);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 6px 10px rgba(120, 115, 245, 0.5);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.btn:hover, .btn-custom:hover, button:hover {
+  background: var(--btn-hover-bg);
+  box-shadow: 0 12px 18px rgba(92, 73, 177, 0.7);
+  transform: translateY(-2px);
+}
+
+.btn:active, .btn-custom:active, button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 6px rgba(92, 73, 177, 0.4);
+}
+
+.btn-warning {
+  background: var(--secondary-gradient);
+  box-shadow: 0 6px 10px rgba(59, 178, 184, 0.6);
+}
+
+.btn-warning:hover {
+  background: #2b8c95;
+  box-shadow: 0 12px 18px rgba(43, 140, 149, 0.8);
+}
+
+/* Expense List */
+#expenseList {
+  margin-top: 2rem;
+}
+
+#expenseItems {
+  list-style: none;
+  padding-left: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(120, 115, 245, 0.1);
+}
+
+#expenseItems li {
+  background: #fafafa;
+  border-left: 6px solid var(--accent-color);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  user-select: text;
+}
+
+#expenseItems li:hover {
+  background: var(--input-bg);
+}
+
+#expenseItems li span.category {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--btn-bg);
+  text-transform: uppercase;
+  background: rgba(120, 115, 245, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  user-select: text;
+}
+
+/* Link style */
+a {
+  color: var(--btn-bg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--btn-hover-bg);
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  body {
+    padding: 1rem;
+  }
+
+  .card {
+    padding: 1.5rem 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  .btn, .btn-custom, button {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Cool subtle animation for headings */
+h2, h3 {
+  animation: fadeInUp 0.8s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#premium-status {
+  font-size: 1rem;
+  background: linear-gradient(to right, #d4fc79, #96e6a1);
+  color: #1f4d2b;
+  border: none;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(33, 122, 62, 0.15);
+}
+
+#leaderboard-card {
+  background-color: #fefefe;
+  border-radius: 15px;
+}
+
+#leaderboard-list li {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
