@@ -19,6 +19,7 @@ document.getElementById("sendResetLink").addEventListener('click', async (e) => 
             window.location.href = "/login.html";
         }
     } catch (error) {
-        alert(error.response?.data || "Unable to send the Reset Link");
+        const errMsg = error.response?.data?.message || "Unable to send the Reset Link";
+        alert(errMsg);
     }
 })

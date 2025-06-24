@@ -25,8 +25,6 @@ app.get("/user/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "signup.html"));
 });
 
-console.log("Registering routes...");
-
 app.use("/user", userRoutes);
 app.use("/expense", expenseRoutes);
 app.use('/purchase', purchaseRoutes);
@@ -35,7 +33,7 @@ app.use('/passwordreset', forgetPassword);
 
 db.sync({force: false}).then(() => {
   app.listen(port, () => {
-    console.log("✅ Server is listening on Port: " + port);
+    console.log("Server is listening on Port: " + port);
   });
 }).catch((error) => {
   console.log(error);

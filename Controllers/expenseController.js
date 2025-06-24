@@ -52,15 +52,41 @@ const getExpense = async (req, res) => {
 };
 
 const deleteExpense = async (req, res) => {
+  const t = await sequelize.transaction();  // Use a transaction for consistency
+
   try {
     const { id } = req.params;
-    await Expense.destroy({ where: { id } });
-    res.status(200).send("Expense deleted successfully");
+
+    // Step 1: Find the expense before deleting
+    const expense = await Expense.findByPk(id);
+    if (!expense) {
+      return res.status(404).send("Expense not found");
+    }
+
+    // Step 2: Get the user associated with the expense
+    const user = await User.findByPk(expense.userId);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    // Step 3: Update the user's totalExpense
+    user.totalExpense -= parseInt(expense.money); // Decrement the expense amount
+    await user.save({ transaction: t }); // Save with transaction
+
+    // Step 4: Delete the expense
+    await Expense.destroy({ where: { id }, transaction: t });
+
+    // Step 5: Commit the transaction
+    await t.commit();
+
+    res.status(200).send("Expense deleted and total expense updated successfully");
   } catch (error) {
-    console.log("❌ Error in deleteExpense:", error);
+    console.error("❌ Error in deleteExpense:", error);
+    await t.rollback(); // Rollback if there's an error
     res.status(500).send("Failed to delete expense");
   }
 };
+
 
 module.exports = {
   addExpense,

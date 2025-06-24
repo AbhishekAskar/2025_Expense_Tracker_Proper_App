@@ -1,21 +1,21 @@
-function getTokenFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("token");
+function getResetIdFromUrl() {
+  const parts = window.location.pathname.split('/');
+  return parts[parts.length - 1]; // gets UUID from /resetpassword/:uuid
 }
 
 document.getElementById("resetPasswordBtn").addEventListener('click', async () => {
   const newPassword = document.getElementById("newPassword").value;
-  const token = getTokenFromUrl();
+  const resetId = getResetIdFromUrl();
 
-  if (!newPassword || !token) {
-    alert("Missing password or token!");
+  if (!newPassword || !resetId) {
+    alert("Missing password or reset ID!");
     return;
   }
 
   try {
     const response = await axios.post("/passwordreset/update-password", {
       newPassword,
-      token
+      resetId
     });
 
     alert(response.data.message);
@@ -27,8 +27,3 @@ document.getElementById("resetPasswordBtn").addEventListener('click', async () =
     alert(error.response?.data?.message || "Error resetting password");
   }
 });
-
-function getTokenFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("token");
-}

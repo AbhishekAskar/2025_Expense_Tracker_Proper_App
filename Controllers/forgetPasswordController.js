@@ -1,10 +1,32 @@
 require('dotenv').config();
 const User = require('../Models/userModel');
+const ForgotPasswordRequest = require("../Models/forgotPasswordModel");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Brevo = require('@getbrevo/brevo'); // Brevo SDK
 const BREVO_KEY = process.env.BREVO_KEY;
 const SECRET_KEY = process.env.JWT_SECRET || "mellow234@*%Yellow"; // Fallback if .env not set
+const path = require("path");
+
+// GET /password/resetpassword/:uuid
+const serveResetPasswordForm = async (req, res) => {
+  const uuid = req.params.uuid;
+
+  try {
+    const request = await ForgotPasswordRequest.findOne({ where: { id: uuid, isActive: true } });
+
+    if (!request) {
+      return res.status(400).send("Invalid or expired password reset link");
+    }
+
+    // Serve your HTML form
+    res.sendFile(path.join(__dirname, "../public/reset-password.html"));
+  } catch (err) {
+    console.error("Error in serveResetPasswordForm:", err);
+    res.status(500).send("Server error");
+  }
+};
+
 
 const getPasswordLink = async (req, res) => {
     const { email } = req.body;
@@ -20,15 +42,21 @@ const getPasswordLink = async (req, res) => {
             return res.status(404).json({ success: false, message: "User not found with that email" });
         }
 
-        // 2. Generate a reset token valid for 1 hour
-        const token = jwt.sign(
-            { userId: user.id },
-            SECRET_KEY,
-            { expiresIn: '1h' }
-        );
+        const { v4: uuidv4 } = require("uuid");
+        const ForgotPasswordRequest = require("../Models/forgotPasswordModel");
 
-        // 3. Create reset link (update URL as per your frontend setup)
-        const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
+        const requestId = uuidv4();
+
+        // Store reset request in DB
+        await ForgotPasswordRequest.create({
+            id: requestId,
+            userId: user.id,
+            isActive: true
+        });
+
+        // Link with UUID
+        const resetLink = `http://localhost:3000/passwordreset/resetpassword/${requestId}`;
+
 
         // 4. Setup Brevo (Sendinblue)
         const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -48,7 +76,8 @@ const getPasswordLink = async (req, res) => {
         await apiInstance.sendTransacEmail(sendSmtpEmail);
 
         // 6. Respond back
-        res.status(200).json({ success: true, message: "Reset link sent successfully", token });
+        res.status(200).json({ success: true, message: "Reset link sent successfully" });
+
 
     } catch (error) {
         console.error("Error in getPasswordLink:", error.message);
@@ -57,36 +86,37 @@ const getPasswordLink = async (req, res) => {
 };
 
 const updatePassword = async (req, res) => {
-    const { token, newPassword } = req.body;
+  const { newPassword, resetId } = req.body;
 
-    try {
-        // 1. Verify token
-        const decoded = jwt.verify(token, SECRET_KEY);
-        const userId = decoded.userId;
+  try {
+    const request = await ForgotPasswordRequest.findOne({ where: { id: resetId } });
 
-        // 2. Hash the new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // 3. Find user by PK and update password
-        const user = await User.findByPk(userId);
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        user.password = hashedPassword;
-        await user.save(); // ✅ Save updated password
-
-        res.status(200).json({ success: true, message: "Password updated successfully" });
-
-    } catch (error) {
-        console.error("Error updating password:", error.message);
-        res.status(400).json({ success: false, message: "Invalid or expired token" });
+    if (!request || !request.isActive) {
+      return res.status(400).json({ success: false, message: "Invalid or expired link" });
     }
+
+    const user = await User.findByPk(request.userId);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    // Mark the reset link as used
+    request.isActive = false;
+    await request.save();
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Error updating password:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 };
+
 
 
 module.exports = {
     getPasswordLink,
-    updatePassword
+    updatePassword,
+    serveResetPasswordForm
 };

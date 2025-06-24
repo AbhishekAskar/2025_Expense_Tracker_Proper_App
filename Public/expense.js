@@ -115,6 +115,12 @@ function addExpenseToList(exp) {
 
   li.appendChild(delBtn);
   expenseList.appendChild(li);
+
+  // 👇 Refresh leaderboard if visible
+  const leaderboardBtn = document.getElementById("leaderBoard");
+  if (!leaderboardBtn.classList.contains("d-none")) {
+    loadLeaderboard();
+  }
 }
 
 async function fetchExpenses() {
@@ -136,6 +142,13 @@ async function deleteExpense(id) {
     await axios.delete(`/expense/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
+
+    // 👇 Automatically refresh leaderboard after deletion
+    const leaderboardBtn = document.getElementById("leaderBoard");
+    if (!leaderboardBtn.classList.contains("d-none")) {
+      loadLeaderboard();
+    }
+
   } catch (error) {
     alert("Failed to delete expense");
   }
