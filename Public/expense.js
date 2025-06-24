@@ -163,13 +163,18 @@ async function checkPremiumStatus() {
     const isPremium = response.data.isPremium;
     const premiumDiv = document.getElementById('premium-status');
     const upgradeBtn = document.getElementById('renderBtn');
+    const lbBtn = document.getElementById("leaderBoard");
+    const analyticsBtn = document.getElementById("analyticsBtn");
 
     if (isPremium) {
       premiumDiv.classList.remove('d-none');
       upgradeBtn.classList.add('d-none');
-
-      const lbBtn = document.getElementById("leaderBoard");
       lbBtn.classList.remove("d-none");
+      analyticsBtn.classList.remove("d-none"); // 👈 Show analytics
+
+      analyticsBtn.addEventListener("click", () => {
+        window.location.href = "/reportGeneration.html";
+      });
 
       let leaderboardVisible = false;
       lbBtn.addEventListener("click", () => {
@@ -186,11 +191,14 @@ async function checkPremiumStatus() {
     } else {
       premiumDiv.classList.add('d-none');
       upgradeBtn.classList.remove('d-none');
+      lbBtn.classList.add("d-none");
+      analyticsBtn.classList.add("d-none"); // 👈 Hide analytics
     }
   } catch (error) {
     console.error("Failed to fetch user details:", error);
   }
 }
+
 
 async function loadLeaderboard() {
   try {
@@ -216,3 +224,6 @@ async function loadLeaderboard() {
     console.error("❌ Error loading leaderboard", err);
   }
 }
+
+
+
