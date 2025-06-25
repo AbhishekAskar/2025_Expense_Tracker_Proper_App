@@ -1,83 +1,120 @@
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
-  const isPremium = localStorage.getItem("isPremium") === "true"; // Simulated
-  const dummyData = JSON.parse(localStorage.getItem("dummyAnalyticsData") || "[]");
   const filterTabs = document.querySelectorAll(".filter-tab");
   const tableBody = document.querySelector("#analyticsTable tbody");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  // Enable/Disable download
-  downloadBtn.disabled = !isPremium;
+  // Load all data initially
+  loadData("all");
 
   filterTabs.forEach(tab => {
     tab.addEventListener("click", () => {
       filterTabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
       const type = tab.getAttribute("data-type");
-      renderTable(filterData(type));
+      loadData(type, 1);
+      document.querySelector('[data-type="all"]').classList.add("active");
     });
   });
 
-  downloadBtn.addEventListener("click", () => {
-    if (!isPremium) return alert("Premium users only!");
-    downloadCSV(dummyData);
-  });
+  downloadBtn.addEventListener("click", async () => {
+    if (downloadBtn.disabled) return;
+    try {
+      const response = await axios.get("/analytics/download", {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
 
-  renderTable(dummyData);
-
-  function filterData(type) {
-    if (type === "all") return dummyData;
-
-    const now = new Date();
-    return dummyData.filter(entry => {
-      const entryDate = new Date(entry.date);
-
-      if (type === "daily") {
-        return entryDate.toDateString() === now.toDateString();
-      } else if (type === "weekly") {
-        const oneWeekAgo = new Date(now);
-        oneWeekAgo.setDate(now.getDate() - 7);
-        return entryDate >= oneWeekAgo;
-      } else if (type === "monthly") {
-        return (
-          entryDate.getMonth() === now.getMonth() &&
-          entryDate.getFullYear() === now.getFullYear()
-        );
-      }
-    });
-  }
-
-  function renderTable(data) {
-    tableBody.innerHTML = "";
-    if (!data.length) {
-      tableBody.innerHTML = "<tr><td colspan='5'>No records found</td></tr>";
-      return;
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "expenses.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      alert("Failed to download file");
+      console.error(err);
     }
+  });
 
-    data.forEach(entry => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
+  let currentPage = 1;
+  let currentFilter = "all";
+
+  async function loadData(filter = "all", page = 1) {
+    currentFilter = filter;
+    currentPage = page;
+
+    try {
+      const res = await axios.get(`/analytics/data?filter=${filter}&page=${page}&limit=10`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const { data, isPremium, totalPages, currentPage: serverPage } = res.data;
+      downloadBtn.disabled = !isPremium;
+
+      tableBody.innerHTML = "";
+
+      if (data.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5">No data available</td></tr>';
+        document.getElementById("paginationControls")?.remove();
+        return;
+      }
+
+      data.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
         <td>${entry.date}</td>
         <td>${entry.type}</td>
         <td>₹${entry.amount}</td>
         <td>${entry.category}</td>
         <td>${entry.description}</td>
       `;
-      tableBody.appendChild(row);
-    });
+        tableBody.appendChild(row);
+      });
+
+      renderPagination(totalPages, serverPage);
+    } catch (err) {
+      tableBody.innerHTML = '<tr><td colspan="5">Failed to load data</td></tr>';
+      console.error("Error fetching analytics data", err);
+    }
   }
 
-  function downloadCSV(data) {
-    let csvContent = "Date,Type,Amount,Category,Description\n";
-    data.forEach(entry => {
-      csvContent += `${entry.date},${entry.type},${entry.amount},${entry.category},${entry.description}\n`;
-    });
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "expenses.csv";
-    a.click();
+  function renderPagination(totalPages, currentPage) {
+  let container = document.getElementById("paginationControls");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "paginationControls";
+    container.classList.add("d-flex", "justify-content-center", "mt-4", "gap-2");
+    document.querySelector(".container").appendChild(container);
   }
+
+  container.innerHTML = "";
+
+  if (currentPage > 1) {
+    const prevBtn = document.createElement("button");
+    prevBtn.className = "btn btn-outline-secondary";
+    prevBtn.textContent = "⏮ Prev";
+    prevBtn.onclick = () => loadData(currentFilter, currentPage - 1);
+    container.appendChild(prevBtn);
+  }
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.className = `btn btn-outline-primary ${i === currentPage ? "active" : ""}`;
+    btn.textContent = i;
+    btn.onclick = () => loadData(currentFilter, i);
+    container.appendChild(btn);
+  }
+
+  if (currentPage < totalPages) {
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "btn btn-outline-secondary";
+    nextBtn.textContent = "Next ⏭";
+    nextBtn.onclick = () => loadData(currentFilter, currentPage + 1);
+    container.appendChild(nextBtn);
+  }
+}
+
+
 });

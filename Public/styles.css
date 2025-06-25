@@ -262,3 +262,30 @@ h2, h3 {
   font-weight: 500;
   margin-bottom: 8px;
 }
+
+/* Make button block level inside form */
+form .btn {
+  width: 100%;
+}
+
+/* Leaderboard improvements */
+#leaderboardDiv {
+  min-height: 200px;
+  background: #fff;
+  border: 2px dashed #dadada;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+#leaderboardDiv h4 {
+  font-weight: 600;
+  color: var(--btn-bg);
+  margin-bottom: 1rem;
+}
+
+/* Pagination styling (optional) */
+#paginationControls button {
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+}

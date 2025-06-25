@@ -17,67 +17,65 @@
 </head>
 
 <body>
-  <div class="container my-5">
-    <div class="card p-4 shadow-lg">
-      <div id="premium-status" class="alert alert-success text-center d-none fw-bold mb-3 rounded-4 shadow-sm">
-        🌟 You are a Premium User!
-      </div>
-      <h2 class="text-center mb-4">📒 Daily Expenses</h2>
+  <!-- Inside your existing <body> tag -->
+<div class="container my-5">
+  <div class="card p-4 shadow-lg">
+    <div id="premium-status" class="alert alert-success text-center d-none fw-bold mb-3 rounded-4 shadow-sm">
+      🌟 You are a Premium User!
+    </div>
+    <h2 class="text-center mb-4">📒 Daily Expenses</h2>
 
-      <form id="expenseForm">
-        <div class="mb-3">
-          <label class="form-label">Money Spent</label>
-          <input type="number" step="0.01" min="0" name="money" class="form-control" placeholder="E.g., 150" required />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Description</label>
-          <input type="text" name="description" class="form-control" placeholder="E.g., Uber ride to office" required />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Category</label>
-          <select name="category" class="form-select" required>
-            <option value="">--Select Category--</option>
-            <option value="food">Food</option>
-            <option value="travel">Travel</option>
-            <option value="shopping">Shopping</option>
-            <option value="rent">Rent</option>
-            <option value="entertainment">Entertainment</option>
-          </select>
-        </div>
-
-        <button type="submit" class="btn btn-custom mt-3">Add Expense</button>
-      </form>
-
-      <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-2">
-        <button id="renderBtn" class="btn btn-warning">
-          Upgrade to Premium 💎
-        </button>
-        <button id="leaderBoard" class="btn btn-info d-none">
-          View Leaderboard 👑
-        </button>
-        <!-- Add this next to #leaderBoard button -->
-        <button id="analyticsBtn" class="btn btn-success d-none">
-          View Analytics 📊
-        </button>
-
+    <form id="expenseForm">
+      <div class="mb-3">
+        <label class="form-label">Money Spent</label>
+        <input type="number" step="0.01" min="0" name="money" class="form-control" placeholder="E.g., 150" required />
       </div>
 
-      <div class="row mt-4">
-        <div class="col-md-6">
-          <div id="expenseList">
-            <h3 class="text-center mb-3">🧾 Your Expenses</h3>
-            <ul id="expenseItems" class="list-group"></ul>
-          </div>
-        </div>
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <input type="text" name="description" class="form-control" placeholder="E.g., Uber ride to office" required />
+      </div>
 
-        <div class="col-md-6">
-          <div id="leaderboardDiv" class="p-3 bg-light border rounded shadow-sm"></div>
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select" required>
+          <option value="">--Select Category--</option>
+          <option value="food">Food</option>
+          <option value="travel">Travel</option>
+          <option value="shopping">Shopping</option>
+          <option value="rent">Rent</option>
+          <option value="entertainment">Entertainment</option>
+        </select>
+      </div>
+
+      <div class="d-grid gap-3 mt-4">
+        <button type="submit" class="btn btn-custom">Add Expense</button>
+        <button id="renderBtn" class="btn btn-warning">Upgrade to Premium 💎</button>
+        <button id="leaderBoard" class="btn btn-info d-none">View Leaderboard 👑</button>
+        <button id="analyticsBtn" class="btn btn-success d-none">View Analytics 📊</button>
+      </div>
+    </form>
+
+    <div class="row mt-5">
+      <!-- Expenses -->
+      <div class="col-md-6">
+        <div id="expenseList">
+          <h3 class="text-center mb-3">🧾 Your Expenses</h3>
+          <ul id="expenseItems" class="list-group"></ul>
+          <div id="paginationControls" class="mt-4 d-flex justify-content-center gap-3"></div>
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="col-md-6">
+        <div id="leaderboardDiv" class="p-4 bg-white border rounded shadow-sm">
+          <!-- leaderboard content loads via JS -->
         </div>
       </div>
     </div>
   </div>
+</div>
+
 
   <!-- Axios and JS -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

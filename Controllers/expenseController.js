@@ -41,15 +41,33 @@ const addExpense = async (req, res) => {
 };
 
 const getExpense = async (req, res) => {
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || 10;
+  const offset = (page - 1) * limit;
+
+  const userId = req.user.id;
+
   try {
-    const userId = req.user.id; // ✅ Fix here (was req.user.userId)
-    const expense = await Expense.findAll({ where: { userId } });
-    res.status(200).json(expense);
-  } catch (error) {
-    console.log("❌ Error in getExpense:", error);
-    res.status(500).send("Error occurred!");
+    const { count, rows } = await Expense.findAndCountAll({
+      where: { userId },
+      offset,
+      limit,
+      order: [['createdAt', 'DESC']]
+    });
+
+    const totalPages = Math.ceil(count / limit);
+
+    res.status(200).json({
+      expenses: rows,
+      currentPage: page,
+      totalPages
+    });
+  } catch (err) {
+    console.error("Error in getExpenses:", err);
+    res.status(500).json({ message: "Failed to fetch expenses" });
   }
 };
+
 
 const deleteExpense = async (req, res) => {
   const t = await sequelize.transaction();  // Use a transaction for consistency

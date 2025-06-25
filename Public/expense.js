@@ -123,19 +123,26 @@ function addExpenseToList(exp) {
   }
 }
 
-async function fetchExpenses() {
+let currentPage = 1;
+const limit = 10;
+
+async function fetchExpenses(page = 1) {
   try {
-    const response = await axios.get("/expense", {
+    const response = await axios.get(`/expense?page=${page}&limit=${limit}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
     const expenseList = document.getElementById("expenseItems");
     expenseList.innerHTML = "";
-    response.data.forEach(addExpenseToList);
+
+    response.data.expenses.forEach(addExpenseToList);
+
+    renderPagination(response.data.currentPage, response.data.totalPages);
   } catch (error) {
     console.error("Error fetching expenses", error);
   }
 }
+
 
 async function deleteExpense(id) {
   try {
@@ -225,5 +232,26 @@ async function loadLeaderboard() {
   }
 }
 
+function renderPagination(currentPage, totalPages) {
+  const paginationDiv = document.getElementById("paginationControls");
+  paginationDiv.innerHTML = "";
+
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "⬅️ Prev";
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.onclick = () => fetchExpenses(currentPage - 1);
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next ➡️";
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.onclick = () => fetchExpenses(currentPage + 1);
+
+  const pageInfo = document.createElement("span");
+  pageInfo.textContent = ` Page ${currentPage} of ${totalPages} `;
+
+  paginationDiv.appendChild(prevBtn);
+  paginationDiv.appendChild(pageInfo);
+  paginationDiv.appendChild(nextBtn);
+}
 
 

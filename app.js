@@ -7,6 +7,7 @@ const expenseRoutes = require("./Routes/expenseRoute");
 const purchaseRoutes = require("./Routes/purchaseRoutes");
 const leaderBoard = require("./Routes/leaderBoard");
 const forgetPassword = require("./Routes/forgetPasswordRoute");
+const analyticsRoute = require("./Routes/reportGenerationRoute");
 require('./Models') //This needs to be done because using this only the index.js model works otherwise it won't
 
 const port = 3000;
@@ -30,6 +31,7 @@ app.use("/expense", expenseRoutes);
 app.use('/purchase', purchaseRoutes);
 app.use('/leaderBoard', leaderBoard);
 app.use('/passwordreset', forgetPassword);
+app.use("/analytics", analyticsRoute);
 
 db.sync({force: false}).then(() => {
   app.listen(port, () => {
