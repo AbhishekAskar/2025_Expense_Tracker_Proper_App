@@ -3,9 +3,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterTabs = document.querySelectorAll(".filter-tab");
   const tableBody = document.querySelector("#analyticsTable tbody");
   const downloadBtn = document.getElementById("downloadBtn");
+  const entriesPerPageSelect = document.getElementById("entriesPerPage");
 
-  // Load all data initially
-  loadData("all");
+  // Defaults
+  let currentPage = 1;
+  let currentFilter = "all";
+
+  // Get saved limit from localStorage or use 10
+  let limit = parseInt(localStorage.getItem("entriesPerPage")) || 10;
+
+  // Set dropdown to saved limit
+  if (entriesPerPageSelect) {
+    entriesPerPageSelect.value = limit;
+
+    // Change event to update limit
+    entriesPerPageSelect.addEventListener("change", () => {
+      limit = parseInt(entriesPerPageSelect.value);
+      localStorage.setItem("entriesPerPage", limit);
+      loadData(currentFilter, 1); // Reset to page 1
+    });
+  }
+
+  // Load data initially
+  loadData("all", 1);
+  document.querySelector('[data-type="all"]').classList.add("active");
 
   filterTabs.forEach(tab => {
     tab.addEventListener("click", () => {
@@ -13,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tab.classList.add("active");
       const type = tab.getAttribute("data-type");
       loadData(type, 1);
-      document.querySelector('[data-type="all"]').classList.add("active");
     });
   });
 
@@ -38,15 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  let currentPage = 1;
-  let currentFilter = "all";
-
   async function loadData(filter = "all", page = 1) {
     currentFilter = filter;
     currentPage = page;
 
     try {
-      const res = await axios.get(`/analytics/data?filter=${filter}&page=${page}&limit=10`, {
+      const res = await axios.get(`/analytics/data?filter=${filter}&page=${page}&limit=${limit}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -64,12 +81,12 @@ document.addEventListener("DOMContentLoaded", () => {
       data.forEach(entry => {
         const row = document.createElement("tr");
         row.innerHTML = `
-        <td>${entry.date}</td>
-        <td>${entry.type}</td>
-        <td>₹${entry.amount}</td>
-        <td>${entry.category}</td>
-        <td>${entry.description}</td>
-      `;
+          <td>${entry.date}</td>
+          <td>${entry.type}</td>
+          <td>₹${entry.amount}</td>
+          <td>${entry.category}</td>
+          <td>${entry.description}</td>
+        `;
         tableBody.appendChild(row);
       });
 
@@ -81,40 +98,38 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderPagination(totalPages, currentPage) {
-  let container = document.getElementById("paginationControls");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "paginationControls";
-    container.classList.add("d-flex", "justify-content-center", "mt-4", "gap-2");
-    document.querySelector(".container").appendChild(container);
+    let container = document.getElementById("paginationControls");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "paginationControls";
+      container.classList.add("d-flex", "justify-content-center", "mt-4", "gap-2");
+      document.querySelector(".container").appendChild(container);
+    }
+
+    container.innerHTML = "";
+
+    if (currentPage > 1) {
+      const prevBtn = document.createElement("button");
+      prevBtn.className = "btn btn-outline-secondary";
+      prevBtn.textContent = "⏮ Prev";
+      prevBtn.onclick = () => loadData(currentFilter, currentPage - 1);
+      container.appendChild(prevBtn);
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement("button");
+      btn.className = `btn btn-outline-primary ${i === currentPage ? "active" : ""}`;
+      btn.textContent = i;
+      btn.onclick = () => loadData(currentFilter, i);
+      container.appendChild(btn);
+    }
+
+    if (currentPage < totalPages) {
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "btn btn-outline-secondary";
+      nextBtn.textContent = "Next ⏭";
+      nextBtn.onclick = () => loadData(currentFilter, currentPage + 1);
+      container.appendChild(nextBtn);
+    }
   }
-
-  container.innerHTML = "";
-
-  if (currentPage > 1) {
-    const prevBtn = document.createElement("button");
-    prevBtn.className = "btn btn-outline-secondary";
-    prevBtn.textContent = "⏮ Prev";
-    prevBtn.onclick = () => loadData(currentFilter, currentPage - 1);
-    container.appendChild(prevBtn);
-  }
-
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement("button");
-    btn.className = `btn btn-outline-primary ${i === currentPage ? "active" : ""}`;
-    btn.textContent = i;
-    btn.onclick = () => loadData(currentFilter, i);
-    container.appendChild(btn);
-  }
-
-  if (currentPage < totalPages) {
-    const nextBtn = document.createElement("button");
-    nextBtn.className = "btn btn-outline-secondary";
-    nextBtn.textContent = "Next ⏭";
-    nextBtn.onclick = () => loadData(currentFilter, currentPage + 1);
-    container.appendChild(nextBtn);
-  }
-}
-
-
 });
