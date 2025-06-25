@@ -2,50 +2,51 @@ const Expense = require('../Models/expenseModel');
 const User = require('../Models/userModel');
 const sequelize = require('../Utils/db-connection');
 
+// Add Expense with transaction
 const addExpense = async (req, res) => {
-  console.log("🔥 In addExpense Controller");
-
   const t = await sequelize.transaction();
 
   try {
-    console.log("📦 Payload Received:", req.body);
-
     const { money, description, category } = req.body;
-    const userId = req.user?.id; // ✅ Consistent with middleware
-    console.log("🙋 User ID:", userId);
+    const userId = req.user?.id;
+
+    if (!money || !description || !category || !userId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const parsedMoney = parseFloat(money);
+    if (isNaN(parsedMoney) || parsedMoney < 0) {
+      return res.status(400).json({ error: "Invalid money amount" });
+    }
 
     const expense = await Expense.create({
-      money: parseInt(money), // ✅ Parse to integer if needed
+      money: parsedMoney,
       description,
       category,
       userId
     }, { transaction: t });
 
     const user = await User.findByPk(userId);
-    if (!user) {
-      console.log("🚨 User not found!");
-      throw new Error("User not found");
-    }
+    if (!user) throw new Error("User not found");
 
-    user.totalExpense += parseInt(money);
+    user.totalExpense += parsedMoney;
     await user.save({ transaction: t });
 
     await t.commit();
-    console.log("✅ Expense added and transaction committed");
-    res.status(201).json(expense );
+    res.status(201).json(expense);
   } catch (err) {
-    console.error("❌ Error in addExpense:", err);
+    console.error("❌ Error in addExpense:", err.message);
     await t.rollback();
     res.status(500).json({ error: 'Something went wrong' });
   }
 };
 
+// Get expenses with pagination
 const getExpense = async (req, res) => {
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
   const offset = (page - 1) * limit;
-
-  const userId = req.user.id;
+  const userId = req.user?.id;
 
   try {
     const { count, rows } = await Expense.findAndCountAll({
@@ -55,56 +56,48 @@ const getExpense = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    const totalPages = Math.ceil(count / limit);
-
     res.status(200).json({
       expenses: rows,
       currentPage: page,
-      totalPages
+      totalPages: Math.ceil(count / limit)
     });
   } catch (err) {
-    console.error("Error in getExpenses:", err);
+    console.error("❌ Error in getExpense:", err.message);
     res.status(500).json({ message: "Failed to fetch expenses" });
   }
 };
 
-
+// Delete expense and update user's totalExpense
 const deleteExpense = async (req, res) => {
-  const t = await sequelize.transaction();  // Use a transaction for consistency
+  const t = await sequelize.transaction();
 
   try {
     const { id } = req.params;
 
-    // Step 1: Find the expense before deleting
     const expense = await Expense.findByPk(id);
     if (!expense) {
-      return res.status(404).send("Expense not found");
+      return res.status(404).json({ message: "Expense not found" });
     }
 
-    // Step 2: Get the user associated with the expense
     const user = await User.findByPk(expense.userId);
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Step 3: Update the user's totalExpense
-    user.totalExpense -= parseInt(expense.money); // Decrement the expense amount
-    await user.save({ transaction: t }); // Save with transaction
+    user.totalExpense -= parseFloat(expense.money);
+    if (user.totalExpense < 0) user.totalExpense = 0;
 
-    // Step 4: Delete the expense
+    await user.save({ transaction: t });
     await Expense.destroy({ where: { id }, transaction: t });
 
-    // Step 5: Commit the transaction
     await t.commit();
-
-    res.status(200).send("Expense deleted and total expense updated successfully");
+    res.status(200).json({ message: "Expense deleted and total updated" });
   } catch (error) {
-    console.error("❌ Error in deleteExpense:", error);
-    await t.rollback(); // Rollback if there's an error
-    res.status(500).send("Failed to delete expense");
+    console.error("❌ Error in deleteExpense:", error.message);
+    await t.rollback();
+    res.status(500).json({ message: "Failed to delete expense" });
   }
 };
-
 
 module.exports = {
   addExpense,

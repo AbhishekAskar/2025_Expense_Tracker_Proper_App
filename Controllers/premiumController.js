@@ -1,9 +1,10 @@
+require('dotenv').config();
 const { Cashfree, CFEnvironment } = require("cashfree-pg");
 
 const cashfree = new Cashfree(
-    CFEnvironment.SANDBOX,
-    "TEST430329ae80e0f32e41a393d78b923034",
-    "TESTaf195616268bd6202eeb3bf8dc458956e7192a85"
+    process.env.CF_ENV,
+    process.env.CF_CLIENT_ID,
+    process.env.CF_CLIENT_SECRET
 );
 
 // 🔹 Create Order
@@ -27,7 +28,7 @@ const createOrder = async (
                 customer_phone: customerPhone
             },
             order_meta: {
-                return_url: `http://localhost:3000/expense.html`,
+                return_url: `${process.env.FRONTEND_URL}/expense.html`,
                 payment_methods: "cc, upi, nb", // NOTE: cc instead of ccc
             },
             order_expiry_time: formattedExpiryDate,
