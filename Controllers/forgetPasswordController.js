@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Brevo = require('@getbrevo/brevo'); // Brevo SDK
 const BREVO_KEY = process.env.BREVO_KEY;
-const SECRET_KEY = process.env.JWT_SECRET || "mellow234@*%Yellow"; // Fallback if .env not set
+const SECRET_KEY = process.env.JWT_SECRET; // Fallback if .env not set
 const path = require("path");
 
 // GET /password/resetpassword/:uuid
