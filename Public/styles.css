@@ -286,6 +286,10 @@ form .btn {
 
 /* Pagination styling (optional) */
 #paginationControls button {
-  font-size: 0.95rem;
   padding: 0.5rem 1rem;
+}
+
+#paginationControls button {
+  min-width: 80px;
+  font-size: 0.9rem;
 }

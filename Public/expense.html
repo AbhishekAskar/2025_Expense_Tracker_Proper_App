@@ -14,68 +14,88 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/styles.css" />
+
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #f0f4ff, #ffffff);
+    }
+
+    #paginationControls button {
+      min-width: 80px;
+      font-size: 0.9rem;
+    }
+
+    .section-box {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+  </style>
 </head>
 
 <body>
-  <!-- Inside your existing <body> tag -->
-<div class="container my-5">
-  <div class="card p-4 shadow-lg">
-    <div id="premium-status" class="alert alert-success text-center d-none fw-bold mb-3 rounded-4 shadow-sm">
-      🌟 You are a Premium User!
-    </div>
-    <h2 class="text-center mb-4">📒 Daily Expenses</h2>
+  <div class="container-fluid py-5 px-4">
+    <div class="row gx-5">
+      <!-- Left Column: Form + Buttons -->
+      <div class="col-lg-4 mb-5">
+        <div class="section-box">
+          <div id="premium-status" class="alert alert-success text-center d-none fw-bold mb-3 rounded-4 shadow-sm">
+            🌟 You are a Premium User!
+          </div>
 
-    <form id="expenseForm">
-      <div class="mb-3">
-        <label class="form-label">Money Spent</label>
-        <input type="number" step="0.01" min="0" name="money" class="form-control" placeholder="E.g., 150" required />
-      </div>
+          <h2 class="text-center mb-4">📒 Daily Expenses</h2>
 
-      <div class="mb-3">
-        <label class="form-label">Description</label>
-        <input type="text" name="description" class="form-control" placeholder="E.g., Uber ride to office" required />
-      </div>
+          <form id="expenseForm">
+            <div class="mb-3">
+              <label class="form-label">Money Spent</label>
+              <input type="number" step="0.01" min="0" name="money" class="form-control" placeholder="E.g., 150" required />
+            </div>
 
-      <div class="mb-3">
-        <label class="form-label">Category</label>
-        <select name="category" class="form-select" required>
-          <option value="">--Select Category--</option>
-          <option value="food">Food</option>
-          <option value="travel">Travel</option>
-          <option value="shopping">Shopping</option>
-          <option value="rent">Rent</option>
-          <option value="entertainment">Entertainment</option>
-        </select>
-      </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <input type="text" name="description" class="form-control" placeholder="E.g., Uber ride to office" required />
+            </div>
 
-      <div class="d-grid gap-3 mt-4">
-        <button type="submit" class="btn btn-custom">Add Expense</button>
-        <button id="renderBtn" class="btn btn-warning">Upgrade to Premium 💎</button>
-        <button id="leaderBoard" class="btn btn-info d-none">View Leaderboard 👑</button>
-        <button id="analyticsBtn" class="btn btn-success d-none">View Analytics 📊</button>
-      </div>
-    </form>
+            <div class="mb-3">
+              <label class="form-label">Category</label>
+              <select name="category" class="form-select" required>
+                <option value="">--Select Category--</option>
+                <option value="food">Food</option>
+                <option value="travel">Travel</option>
+                <option value="shopping">Shopping</option>
+                <option value="rent">Rent</option>
+                <option value="entertainment">Entertainment</option>
+              </select>
+            </div>
 
-    <div class="row mt-5">
-      <!-- Expenses -->
-      <div class="col-md-6">
-        <div id="expenseList">
-          <h3 class="text-center mb-3">🧾 Your Expenses</h3>
-          <ul id="expenseItems" class="list-group"></ul>
-          <div id="paginationControls" class="mt-4 d-flex justify-content-center gap-3"></div>
+            <div class="d-grid gap-3 mt-4">
+              <button type="submit" class="btn btn-primary">Add Expense</button>
+              <button id="renderBtn" class="btn btn-warning">Upgrade to Premium 💎</button>
+              <button id="leaderBoard" class="btn btn-info d-none">View Leaderboard 👑</button>
+              <button id="analyticsBtn" class="btn btn-success d-none">View Analytics 📊</button>
+            </div>
+          </form>
         </div>
       </div>
 
-      <!-- Leaderboard -->
-      <div class="col-md-6">
-        <div id="leaderboardDiv" class="p-4 bg-white border rounded shadow-sm">
-          <!-- leaderboard content loads via JS -->
+      <!-- Right Column: Expenses -->
+      <div class="col-lg-8">
+        <div class="section-box mb-4">
+          <h4 class="text-center mb-3">🧾 Your Expenses</h4>
+          <ul id="expenseItems" class="list-group shadow-sm mb-3"></ul>
+          <div id="paginationControls" class="d-flex justify-content-center gap-2 mt-3"></div>
+        </div>
+
+        <!-- Leaderboard (hidden by default) -->
+        <div class="section-box d-none" id="leaderboardRow">
+          <div id="leaderboardDiv">
+            <!-- leaderboard content will be injected via JS -->
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
 
   <!-- Axios and JS -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

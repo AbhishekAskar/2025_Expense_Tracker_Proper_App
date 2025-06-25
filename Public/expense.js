@@ -172,12 +172,14 @@ async function checkPremiumStatus() {
     const upgradeBtn = document.getElementById('renderBtn');
     const lbBtn = document.getElementById("leaderBoard");
     const analyticsBtn = document.getElementById("analyticsBtn");
+    const leaderboardRow = document.getElementById("leaderboardRow"); // 👈 new
 
     if (isPremium) {
       premiumDiv.classList.remove('d-none');
       upgradeBtn.classList.add('d-none');
       lbBtn.classList.remove("d-none");
-      analyticsBtn.classList.remove("d-none"); // 👈 Show analytics
+      analyticsBtn.classList.remove("d-none");
+      leaderboardRow.classList.remove("d-none"); // 👈 show
 
       analyticsBtn.addEventListener("click", () => {
         window.location.href = "/reportGeneration.html";
@@ -199,12 +201,14 @@ async function checkPremiumStatus() {
       premiumDiv.classList.add('d-none');
       upgradeBtn.classList.remove('d-none');
       lbBtn.classList.add("d-none");
-      analyticsBtn.classList.add("d-none"); // 👈 Hide analytics
+      analyticsBtn.classList.add("d-none");
+      leaderboardRow.classList.add("d-none"); // 👈 hide the whole row
     }
   } catch (error) {
     console.error("Failed to fetch user details:", error);
   }
 }
+
 
 
 async function loadLeaderboard() {
@@ -213,24 +217,35 @@ async function loadLeaderboard() {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+    const leaderboardRow = document.getElementById("leaderboardRow");
     const leaderboardDiv = document.getElementById("leaderboardDiv");
-    leaderboardDiv.innerHTML = `<h4 class="text-center">🏆 Leaderboard</h4>`;
 
-    const sorted = response.data.leaderboard.sort((a, b) => b.totalExpense - a.totalExpense);
+    const sorted = response.data.leaderboard?.sort((a, b) => b.totalExpense - a.totalExpense);
 
-    sorted.forEach((user, index) => {
-      const name = user.name || "Unknown User";
-      const total = user.totalExpense || 0;
+    // If there's valid data, show the section
+    if (sorted && sorted.length > 0) {
+      leaderboardRow.classList.remove("d-none");
+      leaderboardDiv.innerHTML = `<h4 class="text-center mb-3">🏆 Leaderboard</h4>`;
 
-      const item = document.createElement("p");
-      item.innerHTML = `<strong>#${index + 1}</strong> - ${name}: ₹${total}`;
-      leaderboardDiv.appendChild(item);
-    });
+      sorted.forEach((user, index) => {
+        const name = user.name || "Unknown User";
+        const total = user.totalExpense || 0;
+
+        const item = document.createElement("p");
+        item.innerHTML = `<strong>#${index + 1}</strong> - ${name}: ₹${total}`;
+        leaderboardDiv.appendChild(item);
+      });
+    } else {
+      leaderboardRow.classList.add("d-none");
+    }
 
   } catch (err) {
     console.error("❌ Error loading leaderboard", err);
+    document.getElementById("leaderboardRow").classList.add("d-none");
   }
 }
+
+
 
 function renderPagination(currentPage, totalPages) {
   const paginationDiv = document.getElementById("paginationControls");
