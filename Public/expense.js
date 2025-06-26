@@ -269,4 +269,25 @@ function renderPagination(currentPage, totalPages) {
   paginationDiv.appendChild(nextBtn);
 }
 
+document.getElementById("downloadBtn").addEventListener("click", async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("/user/download", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.status === 200) {
+      const a = document.createElement("a");
+      a.href = res.data.fileURL;
+      a.download = 'expenses.txt';
+      a.click();
+    } else {
+      alert("Failed to download file!");
+    }
+  } catch (err) {
+    console.error("❌ Download Error:", err);
+    alert("Something went wrong");
+  }
+});
+
 

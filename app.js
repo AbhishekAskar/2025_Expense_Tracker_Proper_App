@@ -16,6 +16,7 @@ const purchaseRoutes = require("./Routes/purchaseRoutes");
 const leaderBoard = require("./Routes/leaderBoard");
 const forgetPassword = require("./Routes/forgetPasswordRoute");
 const analyticsRoute = require("./Routes/reportGenerationRoute");
+const downloadRoute = require('./Routes/downloadRoute');
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use("/purchase", purchaseRoutes);
 app.use("/leaderBoard", leaderBoard);
 app.use("/passwordreset", forgetPassword);
 app.use("/analytics", analyticsRoute);
+app.use('/user', downloadRoute);
 
 // 404 fallback
 app.use((req, res, next) => {
