@@ -3,14 +3,18 @@ const sequelize = require('../Utils/db-connection');
 
 const User = require('./userModel');
 const Expense = require('./expenseModel');
+const DownloadHistory = require("./downloadHistory");
 
-// 🔗 Define association
 User.hasMany(Expense);
 Expense.belongsTo(User);
 
-// 🧠 Export with names matching your controller
+DownloadHistory.belongsTo(User);
+User.hasMany(DownloadHistory);
+
+
 module.exports = {
   User,
   Expense,
+  DownloadHistory,
   sequelize
 };

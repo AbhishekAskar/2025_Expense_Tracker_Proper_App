@@ -4,6 +4,8 @@ const cashfree = Cashfree({ mode: "sandbox" });
 document.addEventListener("DOMContentLoaded", async () => {
   checkPremiumStatus();
   fetchExpenses();
+  fetchDownloadHistory();
+
 
   const pendingOrderId = localStorage.getItem("pendingOrderId");
   if (pendingOrderId) {
@@ -291,3 +293,35 @@ document.getElementById("downloadBtn").addEventListener("click", async () => {
 });
 
 
+async function fetchDownloadHistory() {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("/user/download-history", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const list = document.getElementById("historyList");
+    list.innerHTML = ""; // Clear old history
+
+    if (res.data.success && res.data.history.length > 0) {
+      res.data.history.forEach(entry => {
+        const li = document.createElement("li");
+        li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+        const date = new Date(entry.downloadedAt).toLocaleString();
+
+        li.innerHTML = `
+          <a href="${entry.fileURL}" target="_blank" class="text-decoration-none">Download from ${date}</a>
+          <span class="badge bg-primary rounded-pill">📥</span>
+        `;
+
+        list.appendChild(li);
+      });
+    } else {
+      list.innerHTML = `<li class="list-group-item">No downloads yet 🤷‍♂️</li>`;
+    }
+  } catch (err) {
+    console.error("❌ Failed to fetch download history:", err);
+    document.getElementById("historyList").innerHTML = `<li class="list-group-item">Error loading history</li>`;
+  }
+}
