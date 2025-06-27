@@ -41,7 +41,7 @@ app.get("/user/signup", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "signup.html"));
 });
 
-app.use("/user", userRoutes);
+app.use("/user", userRoutes); 
 app.use("/expense", expenseRoutes);
 app.use("/purchase", purchaseRoutes);
 app.use("/leaderBoard", leaderBoard);
