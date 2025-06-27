@@ -15,7 +15,8 @@ const initiatePayment = async (req, res) => {
         const amount = 99;
         const currency = "INR";
 
-        const paymentSessionId = await createOrder(orderId, amount, currency, userId, "9999999999");
+        const returnUrl = `${req.headers.origin}/expense.html`;
+        const paymentSessionId = await createOrder(orderId, amount, currency, userId, "9999999999", returnUrl);
 
         res.status(200).json({ paymentSessionId, orderId });
     } catch (err) {

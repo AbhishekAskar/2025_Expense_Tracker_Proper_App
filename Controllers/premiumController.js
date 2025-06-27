@@ -13,7 +13,8 @@ const createOrder = async (
     orderAmount,
     orderCurrency = "INR",
     customerId,
-    customerPhone
+    customerPhone,
+    returnUrl 
 ) => {
     try {
         const expiryDate = new Date(Date.now() + 60 * 60 * 1000);
@@ -28,7 +29,7 @@ const createOrder = async (
                 customer_phone: customerPhone
             },
             order_meta: {
-                return_url: `${process.env.FRONTEND_URL}/expense.html`,
+                return_url:returnUrl ,
                 payment_methods: "cc, upi, nb", // NOTE: cc instead of ccc
             },
             order_expiry_time: formattedExpiryDate,
