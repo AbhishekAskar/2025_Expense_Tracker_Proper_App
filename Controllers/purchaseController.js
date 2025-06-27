@@ -7,7 +7,7 @@ const initiatePayment = async (req, res) => {
         const userId = req.user.id;
         const user = await Users.findByPk(userId);
 
-        if (!user) {
+        if (!user) { 
             return res.status(400).json({ message: "User not found." });
         }
 
