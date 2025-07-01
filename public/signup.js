@@ -17,3 +17,5 @@ document.getElementById("signupForm").addEventListener("submit", async function 
     alert(error.response?.data || "Signup failed");
   }
 });
+
+console.log("sirdhar")
