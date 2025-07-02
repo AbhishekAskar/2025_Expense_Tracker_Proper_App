@@ -160,8 +160,8 @@ select.form-select:focus {
 #expenseItems {
   list-style: none;
   padding-left: 0;
-  max-height: 280px;
-  overflow-y: auto;
+  /* max-height: 280px;
+  overflow-y: auto; */
   border-radius: 12px;
   box-shadow: 0 5px 15px rgba(120, 115, 245, 0.1);
 }

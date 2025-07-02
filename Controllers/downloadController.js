@@ -10,7 +10,6 @@ const downloadExpenses = async (req, res) => {
 
     const s3Response = await uploadToS3(data, filename);
 
-    // Save URL to download history
     await DownloadHistory.create({
       fileURL: s3Response.Location,
       userId: req.user.id
@@ -18,7 +17,7 @@ const downloadExpenses = async (req, res) => {
 
     return res.status(200).json({ fileURL: s3Response.Location, success: true });
   } catch (err) {
-    console.error('❌ Error while downloading expenses:', err);
+    console.error('Error while downloading expenses:', err);
     return res.status(500).json({ message: 'Something went wrong!' });
   }
 };
@@ -32,7 +31,7 @@ const getDownloadHistory = async (req, res) => {
 
     res.status(200).json({ success: true, history });
   } catch (err) {
-    console.error("❌ Failed to fetch history:", err);
+    console.error("Failed to fetch history:", err);
     res.status(500).json({ success: false, message: "Error retrieving history" });
   }
 };

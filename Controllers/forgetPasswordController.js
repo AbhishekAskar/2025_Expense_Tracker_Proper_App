@@ -12,7 +12,6 @@ const BREVO_KEY = process.env.BREVO_KEY;
 const SECRET_KEY = process.env.JWT_SECRET;
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
-// Serve the reset-password.html form
 const serveResetPasswordForm = async (req, res) => {
   const uuid = req.params.uuid;
 
@@ -25,7 +24,6 @@ const serveResetPasswordForm = async (req, res) => {
       return res.status(400).send("Invalid or expired password reset link");
     }
 
-    // Optional: Check if link is older than 1 hour
     const oneHour = 60 * 60 * 1000;
     const age = Date.now() - new Date(request.createdAt).getTime();
     if (age > oneHour) {
@@ -36,13 +34,11 @@ const serveResetPasswordForm = async (req, res) => {
 
     res.sendFile(path.join(__dirname, "../public/reset-password.html"));
   } catch (err) {
-    console.error("❌ Error in serveResetPasswordForm:", err);
+    console.error("Error in serveResetPasswordForm:", err);
     res.status(500).send("Server error");
   }
 };
 
-
-// Generate and send password reset link
 const getPasswordLink = async (req, res) => {
   const { email } = req.body;
 
@@ -86,14 +82,12 @@ const getPasswordLink = async (req, res) => {
     res.status(200).json({ success: true, message: "Reset link sent successfully" });
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
-      console.error("❌ Error in getPasswordLink:", error.message);
+      console.error("Error in getPasswordLink:", error.message);
     }
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
 };
 
-
-// Update password with new one
 const updatePassword = async (req, res) => {
   const { newPassword, resetId } = req.body;
 
@@ -122,7 +116,7 @@ const updatePassword = async (req, res) => {
     res.status(200).json({ success: true, message: "Password updated successfully" });
   } catch (err) {
     if (process.env.NODE_ENV !== "production") {
-      console.error("❌ Error updating password:", err);
+      console.error("Error updating password:", err);
     }
     res.status(500).json({ success: false, message: "Server error" });
   }

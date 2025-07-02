@@ -2,7 +2,7 @@ document.getElementById("sendResetLink").addEventListener('click', async (e) => 
     e.preventDefault();
 
     const formData = {
-        email: document.getElementById("email").value //because this is not inside any form
+        email: document.getElementById("email").value 
     };
 
     console.log(formData);

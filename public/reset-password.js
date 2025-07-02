@@ -1,6 +1,6 @@
 function getResetIdFromUrl() {
   const parts = window.location.pathname.split('/');
-  return parts[parts.length - 1]; // gets UUID from /resetpassword/:uuid
+  return parts[parts.length - 1]; 
 }
 
 document.getElementById("resetPasswordBtn").addEventListener('click', async () => {

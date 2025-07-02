@@ -5,26 +5,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadBtn = document.getElementById("downloadBtn");
   const entriesPerPageSelect = document.getElementById("entriesPerPage");
 
-  // Defaults
   let currentPage = 1;
   let currentFilter = "all";
 
-  // Get saved limit from localStorage or use 10
   let limit = parseInt(localStorage.getItem("entriesPerPage")) || 10;
 
-  // Set dropdown to saved limit
   if (entriesPerPageSelect) {
     entriesPerPageSelect.value = limit;
 
-    // Change event to update limit
     entriesPerPageSelect.addEventListener("change", () => {
       limit = parseInt(entriesPerPageSelect.value);
       localStorage.setItem("entriesPerPage", limit);
-      loadData(currentFilter, 1); // Reset to page 1
+      loadData(currentFilter, 1); 
     });
   }
 
-  // Load data initially
   loadData("all", 1);
   document.querySelector('[data-type="all"]').classList.add("active");
 

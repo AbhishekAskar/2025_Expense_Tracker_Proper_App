@@ -5,7 +5,7 @@ const User = require("./userModel");
 const ForgotPasswordRequest = sequelize.define("forgotpasswordrequest", {
   id: {
     type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4, // auto-generate UUID
+    defaultValue: DataTypes.UUIDV4, 
     allowNull: false,
     primaryKey: true
   },
@@ -16,7 +16,6 @@ const ForgotPasswordRequest = sequelize.define("forgotpasswordrequest", {
   }
 });
 
-// Relation: Many requests can belong to one user
 User.hasMany(ForgotPasswordRequest);
 ForgotPasswordRequest.belongsTo(User);
 

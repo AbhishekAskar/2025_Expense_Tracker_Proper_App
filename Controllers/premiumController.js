@@ -7,7 +7,6 @@ const cashfree = new Cashfree(
     process.env.CF_CLIENT_SECRET
 );
 
-// 🔹 Create Order
 const createOrder = async (
     orderId,
     orderAmount,
@@ -30,7 +29,7 @@ const createOrder = async (
             },
             order_meta: {
                 return_url:returnUrl ,
-                payment_methods: "cc, upi, nb", // NOTE: cc instead of ccc
+                payment_methods: "cc, upi, nb", 
             },
             order_expiry_time: formattedExpiryDate,
         };
@@ -43,7 +42,6 @@ const createOrder = async (
     }
 };
 
-// 🔹 Get Payment Status
 const getPaymentStatus = async (orderId) => {
     try {
         const response = await cashfree.PGOrderFetchPayments(orderId);
@@ -58,7 +56,7 @@ const getPaymentStatus = async (orderId) => {
         }
     } catch (error) {
         console.error("Error fetching payment status:", error.response?.data || error.message);
-        return "Error"; // Or throw if you want to handle it at a higher level
+        return "Error";
     }
 };
 

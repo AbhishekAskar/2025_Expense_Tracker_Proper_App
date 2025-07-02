@@ -2,7 +2,6 @@ const Expense = require('../Models/expenseModel');
 const User = require('../Models/userModel');
 const sequelize = require('../Utils/db-connection');
 
-// Add Expense with transaction
 const addExpense = async (req, res) => {
   const t = await sequelize.transaction();
 
@@ -35,7 +34,7 @@ const addExpense = async (req, res) => {
     await t.commit();
     res.status(201).json(expense);
   } catch (err) {
-    console.error("❌ Error in addExpense:", err.message);
+    console.error("Error in addExpense:", err.message);
     await t.rollback();
     res.status(500).json({ error: 'Something went wrong' });
   }
@@ -62,12 +61,11 @@ const getExpense = async (req, res) => {
       totalPages: Math.ceil(count / limit)
     });
   } catch (err) {
-    console.error("❌ Error in getExpense:", err.message);
+    console.error("Error in getExpense:", err.message);
     res.status(500).json({ message: "Failed to fetch expenses" });
   }
 };
 
-// Delete expense and update user's totalExpense
 const deleteExpense = async (req, res) => {
   const t = await sequelize.transaction();
 
@@ -93,7 +91,7 @@ const deleteExpense = async (req, res) => {
     await t.commit();
     res.status(200).json({ message: "Expense deleted and total updated" });
   } catch (error) {
-    console.error("❌ Error in deleteExpense:", error.message);
+    console.error("Error in deleteExpense:", error.message);
     await t.rollback();
     res.status(500).json({ message: "Failed to delete expense" });
   }

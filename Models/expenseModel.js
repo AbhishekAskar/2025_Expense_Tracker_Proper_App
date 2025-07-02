@@ -9,7 +9,7 @@ const Expense = sequelize.define('expense', {
     allowNull: false
   },
   money: {
-    type: DataTypes.STRING,  // optional: change to INTEGER if needed
+    type: DataTypes.STRING,  
     allowNull: true
   },
   description: {

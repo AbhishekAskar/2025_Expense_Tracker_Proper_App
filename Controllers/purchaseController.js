@@ -1,7 +1,6 @@
 const Users = require('../Models/userModel');
 const { getPaymentStatus, createOrder } = require('./premiumController');
 
-// 🔹 For /premium/pay
 const initiatePayment = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -20,12 +19,11 @@ const initiatePayment = async (req, res) => {
 
         res.status(200).json({ paymentSessionId, orderId });
     } catch (err) {
-        console.error("❌ Pay Route Error:", err);
+        console.error("Pay Route Error:", err);
         res.status(500).json({ error: err.message });
     }
 };
 
-// 🔹 For /purchase/update-status
 const updatePaymentStatus = async (req, res) => {
     const { orderId } = req.body;
 
@@ -48,7 +46,6 @@ const updatePaymentStatus = async (req, res) => {
     }
 };
 
-// 🔹 For /premium/expense/:orderId
 const markUserPremium = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -64,7 +61,7 @@ const markUserPremium = async (req, res) => {
 
         res.redirect('/expense.html');
     } catch (err) {
-        console.error("❌ Error in GET /expense/:orderId:", err);
+        console.error("Error in GET /expense/:orderId:", err);
         res.status(500).send("Something went wrong.");
     }
 };

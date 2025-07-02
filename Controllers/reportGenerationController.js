@@ -1,4 +1,4 @@
-const Expense = require("../Models/expenseModel"); // adjust path if needed
+const Expense = require("../Models/expenseModel"); 
 const User = require("../Models/userModel");
 const { Op } = require("sequelize");
 const { Parser } = require("json2csv");

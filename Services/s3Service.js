@@ -14,5 +14,5 @@ exports.uploadToS3 = async (data, filename) => {
     ACL: 'public-read'
   };
 
-  return s3.upload(params).promise(); // Returns a promise with Location (URL)
+  return s3.upload(params).promise();
 };

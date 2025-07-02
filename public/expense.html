@@ -6,14 +6,11 @@
   <title>Expense Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- CashFree CDN -->
   <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
-  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
 
   <style>
     body {
@@ -35,9 +32,18 @@
 </head>
 
 <body>
+  <div id="authWarning" class="alert alert-danger text-center d-none">
+    You are not logged in. <a href="/login.html">Click here to login</a>.
+  </div>
+
+  <div>
+    <button id="logoutBtn" class="btn btn-primary btn-sm text-white shadow-sm"
+      style="position: absolute; top: 20px; right: 30px; z-index: 1000;">
+      Logout
+    </button>
+  </div>
   <div class="container-fluid py-5 px-4">
     <div class="row gx-5">
-      <!-- Left Column: Form + Buttons -->
       <div class="col-lg-4 mb-5">
         <div class="section-box">
           <div id="premium-status" class="alert alert-success text-center d-none fw-bold mb-3 rounded-4 shadow-sm">
@@ -87,7 +93,6 @@
         </div>
       </div>
 
-      <!-- Right Column: Expenses -->
       <div class="col-lg-8">
         <div class="section-box mb-4">
           <h4 class="text-center mb-3">🧾 Your Expenses</h4>
@@ -95,19 +100,15 @@
           <div id="paginationControls" class="d-flex justify-content-center gap-2 mt-3"></div>
         </div>
 
-        <!-- Leaderboard (hidden by default) -->
         <div class="section-box d-none" id="leaderboardRow">
           <div id="leaderboardDiv">
-            <!-- leaderboard content will be injected via JS -->
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Axios and JS -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="expense.js"></script>
+  <script src="/expense.js"></script>
 </body>
 
 </html>
