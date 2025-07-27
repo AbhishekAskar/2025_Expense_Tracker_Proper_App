@@ -1,10 +1,7 @@
 const Expense = require('../Models/expenseModel');
 const User = require('../Models/userModel');
-const sequelize = require('../Utils/db-connection');
 
 const addExpense = async (req, res) => {
-  const t = await sequelize.transaction();
-
   try {
     const { money, description, category } = req.body;
     const userId = req.user?.id;
@@ -18,24 +15,22 @@ const addExpense = async (req, res) => {
       return res.status(400).json({ error: "Invalid money amount" });
     }
 
+    // Create new expense
     const expense = await Expense.create({
       money: parsedMoney,
       description,
       category,
       userId
-    }, { transaction: t });
+    });
 
-    const user = await User.findByPk(userId);
-    if (!user) throw new Error("User not found");
+    // Update total expense for user
+    await User.findByIdAndUpdate(userId, {
+      $inc: { totalExpense: parsedMoney }
+    });
 
-    user.totalExpense += parsedMoney;
-    await user.save({ transaction: t });
-
-    await t.commit();
     res.status(201).json(expense);
   } catch (err) {
     console.error("Error in addExpense:", err.message);
-    await t.rollback();
     res.status(500).json({ error: 'Something went wrong' });
   }
 };
@@ -44,19 +39,18 @@ const addExpense = async (req, res) => {
 const getExpense = async (req, res) => {
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
-  const offset = (page - 1) * limit;
+  const skip = (page - 1) * limit;
   const userId = req.user?.id;
 
   try {
-    const { count, rows } = await Expense.findAndCountAll({
-      where: { userId },
-      offset,
-      limit,
-      order: [['createdAt', 'DESC']]
-    });
+    const count = await Expense.countDocuments({ userId });
+    const expenses = await Expense.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json({
-      expenses: rows,
+      expenses,
       currentPage: page,
       totalPages: Math.ceil(count / limit)
     });
@@ -67,32 +61,23 @@ const getExpense = async (req, res) => {
 };
 
 const deleteExpense = async (req, res) => {
-  const t = await sequelize.transaction();
-
   try {
     const { id } = req.params;
 
-    const expense = await Expense.findByPk(id);
+    const expense = await Expense.findById(id);
     if (!expense) {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    const user = await User.findByPk(expense.userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    // Update user's totalExpense
+    await User.findByIdAndUpdate(expense.userId, {
+      $inc: { totalExpense: -parseFloat(expense.money) }
+    });
 
-    user.totalExpense -= parseFloat(expense.money);
-    if (user.totalExpense < 0) user.totalExpense = 0;
-
-    await user.save({ transaction: t });
-    await Expense.destroy({ where: { id }, transaction: t });
-
-    await t.commit();
+    await Expense.findByIdAndDelete(id);
     res.status(200).json({ message: "Expense deleted and total updated" });
   } catch (error) {
     console.error("Error in deleteExpense:", error.message);
-    await t.rollback();
     res.status(500).json({ message: "Failed to delete expense" });
   }
 };

@@ -1,20 +1,16 @@
-const { Expense, User } = require('../Models');
-const { Sequelize } = require('sequelize');
+const User = require('../Models/userModel');
 
 const getLeaderboard = async (req, res) => {
   try {
-    
-    const currentUser = await User.findByPk(req.user.id);
+    const currentUser = await User.findById(req.user.id);
     const isPremium = currentUser?.isPremium || false;
 
     if (!isPremium) {
       return res.status(200).json({ isPremium, leaderboard: [] });
     }
 
-    const leaderboard = await User.findAll({
-      attributes: ['name', 'totalExpense'],
-      order: [['totalExpense', 'DESC']]
-    });
+    const leaderboard = await User.find({}, 'name totalExpense')
+      .sort({ totalExpense: -1 }); // Descending order
 
     res.status(200).json({ isPremium, leaderboard });
   } catch (err) {

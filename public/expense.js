@@ -1,5 +1,6 @@
 const token = localStorage.getItem("token");
 const cashfree = Cashfree({ mode: "sandbox" });
+// const mongoose = require('mongoose');
 
 if (!token) {
   document.getElementById("authWarning").classList.remove("d-none");
@@ -13,7 +14,6 @@ const limit = 5;
 document.addEventListener("DOMContentLoaded", async () => {
   checkPremiumStatus();
   fetchExpenses(currentPage);
-  fetchDownloadHistory();
 
   const pendingOrderId = localStorage.getItem("pendingOrderId");
   if (pendingOrderId) {
@@ -103,7 +103,7 @@ function addExpenseToList(exp) {
   delBtn.style.marginLeft = "10px";
 
   delBtn.onclick = async () => {
-    await deleteExpense(exp.id);
+    await deleteExpense(exp._id);
     await fetchExpenses(currentPage); // Re-fetch after deletion
   };
 
@@ -273,56 +273,6 @@ async function loadLeaderboard() {
 
   } catch (err) {
     console.error("Error loading leaderboard", err);
-  }
-}
-
-document.getElementById("downloadBtn").addEventListener("click", async () => {
-  try {
-    const res = await axios.get("/user/download", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (res.status === 200) {
-      const a = document.createElement("a");
-      a.href = res.data.fileURL;
-      a.download = 'expenses.txt';
-      a.click();
-    } else {
-      alert("Failed to download file!");
-    }
-  } catch (err) {
-    console.error(" Download Error:", err);
-    alert("Something went wrong");
-  }
-});
-
-async function fetchDownloadHistory() {
-  try {
-    const res = await axios.get("/user/download-history", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const list = document.getElementById("historyList");
-    list.innerHTML = "";
-
-    if (res.data.success && res.data.history.length > 0) {
-      res.data.history.forEach(entry => {
-        const li = document.createElement("li");
-        li.className = "list-group-item d-flex justify-content-between align-items-center";
-        const date = new Date(entry.downloadedAt).toLocaleString();
-
-        li.innerHTML = `
-          <a href="${entry.fileURL}" target="_blank" class="text-decoration-none">Download from ${date}</a>
-          <span class="badge bg-primary rounded-pill">📥</span>
-        `;
-        list.appendChild(li);
-      });
-    } else {
-      list.innerHTML = `<li class="list-group-item">No downloads yet 🤷‍♂️</li>`;
-    }
-  } catch (err) {
-    console.error(" Failed to fetch download history:", err);
-    document.getElementById("historyList").innerHTML = `<li class="list-group-item">Error loading history</li>`;
   }
 }
 

@@ -1,15 +1,21 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../Utils/db-connection");
+const mongoose = require("mongoose");
 
-const DownloadHistory = sequelize.define("DownloadHistory", {
+const downloadHistorySchema = new mongoose.Schema({
   fileURL: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true
   },
   downloadedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
+    type: Date,
+    default: Date.now
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
   }
-});
+}, { timestamps: true }); // Adds createdAt and updatedAt
+
+const DownloadHistory = mongoose.model("DownloadHistory", downloadHistorySchema);
 
 module.exports = DownloadHistory;

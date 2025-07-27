@@ -1,10 +1,10 @@
-const Users = require('../Models/userModel');
+const User = require('../Models/userModel');
 const { getPaymentStatus, createOrder } = require('./premiumController');
 
 const initiatePayment = async (req, res) => {
     try {
         const userId = req.user.id;
-        const user = await Users.findByPk(userId);
+        const user = await User.findById(userId);
 
         if (!user) {
             return res.status(400).json({ message: "User not found." });
@@ -15,7 +15,14 @@ const initiatePayment = async (req, res) => {
         const currency = "INR";
 
         const returnUrl = `${req.headers.origin}/expense.html`;
-        const paymentSessionId = await createOrder(orderId, amount, currency, userId, "9999999999", returnUrl);
+        const paymentSessionId = await createOrder(
+            orderId,
+            amount,
+            currency,
+            userId,
+            "9999999999", // You might want to replace this with user's actual phone
+            returnUrl
+        );
 
         res.status(200).json({ paymentSessionId, orderId });
     } catch (err) {
@@ -30,7 +37,7 @@ const updatePaymentStatus = async (req, res) => {
     try {
         const status = await getPaymentStatus(orderId);
         if (status === "Success") {
-            const user = await Users.findByPk(req.user.id);
+            const user = await User.findById(req.user.id);
             if (!user) return res.status(404).json({ message: "User not found" });
 
             user.isPremium = true;
@@ -51,7 +58,7 @@ const markUserPremium = async (req, res) => {
         const userId = req.user.id;
         const { orderId } = req.params;
 
-        const user = await Users.findByPk(userId);
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
